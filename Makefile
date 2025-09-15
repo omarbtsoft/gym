@@ -84,6 +84,7 @@ npm-install:
 	cd $(FRONT_DIR) && npm install
 
 npm-build:
+	rm -fR $(FRONT_DIR)/dist
 	cd $(FRONT_DIR) && npm run build
 
 npm-dev:
