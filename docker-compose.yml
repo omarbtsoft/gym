@@ -1,0 +1,54 @@
+version: "3.8"
+
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: nginx1
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+      - ./backend:/var/www
+      - ./frontend/dist:/usr/share/nginx/html
+    depends_on:
+      - app
+      - frontend
+      - db
+
+  db:
+    image: postgres:15
+    container_name: postgres1
+    volumes:
+      - ./backend/postgresql/data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+
+  app:
+    container_name: gym-be1
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    volumes:
+      - ./backend:/var/www
+    ports:
+      - "9000:9000"
+    working_dir: /var/www
+    command: >
+      /bin/sh -c "mkdir -p /var/www/storage /var/www/bootstrap/cache &&
+      chmod -R 775 /var/www/storage /var/www/bootstrap/cache &&
+      chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache &&
+      php-fpm"
+
+  frontend:
+    container_name: gym-fe1
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    depends_on:
+      - app
