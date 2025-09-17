@@ -12,7 +12,7 @@ services:
       - ./frontend/dist:/usr/share/nginx/html
     depends_on:
       - app
-      - frontend
+      - frontend-build
       - db
 
   db:
@@ -43,8 +43,8 @@ services:
       chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache &&
       php-fpm"
 
-  frontend:
-    container_name: gym-fe1
+  frontend-build:
+    container_name: fe-build
     build:
       context: ./frontend
       dockerfile: Dockerfile
@@ -52,3 +52,14 @@ services:
       - "3000:80"
     depends_on:
       - app
+
+  frontend-dev:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: fe-dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules

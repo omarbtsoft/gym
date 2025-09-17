@@ -14,7 +14,7 @@ BACK_DIR  = ./backend
 DOCKER_COMPOSE = docker compose -f docker-compose.yml
 
 GYM_BE= docker exec -it gym-be1
-
+GYM_FE_DEV = docker exec -it fe-dev
 create-env:
 	cp -n $(BACK_DIR)/.env.example $(BACK_DIR)/.env || true
 
@@ -81,15 +81,11 @@ artisan-%:
 # FRONTEND (React/Vite)
 # =======================
 npm-install:
-	cd $(FRONT_DIR) && npm install
+	docker exec -it fe-dev npm install
 
 npm-build:
-	rm -fR $(FRONT_DIR)/dist
-	cd $(FRONT_DIR) && npm run build
-
-npm-dev:
-	cd $(FRONT_DIR) && npm run dev
-
+	docker exec -it fe-dev rm -rf dist
+	docker exec -it fe-dev npm run build
 # =======================
 # UTILITIES
 # =======================
